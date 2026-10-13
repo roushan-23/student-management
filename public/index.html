@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System – CRUD Web Application</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Header -->
+    <header class="header">
+        <div class="container">
+            <h1>STUDENT MANAGEMENT SYSTEM</h1>
+            <p class="subtitle">BCA Full Stack Development – Simple &amp; Complete CRUD Application</p>
+        </div>
+    </header>
+
+    <!-- Global Notification Banner -->
+    <div class="container">
+        <div id="alertMessage" class="alert hidden"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- 1. SEARCH SECTION (MAIN FEATURE) -->
+        <section class="card search-card">
+            <div class="card-header">
+                <h2>Search Student by Roll Number</h2>
+            </div>
+            <div class="card-body">
+                <form id="searchForm" class="search-form" onsubmit="event.preventDefault(); handleSearch();">
+                    <input 
+                        type="text" 
+                        id="searchRollNo" 
+                        placeholder="Enter Roll Number (e.g. 24BCA001)" 
+                        required
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="btn btn-primary" id="searchBtn">Search</button>
+                    <button type="button" class="btn btn-outline" id="clearSearchBtn" onclick="clearSearchResult()">Clear</button>
+                </form>
+
+                <!-- Search Result Container -->
+                <div id="searchResultArea" class="search-result-area hidden">
+                    <!-- Dynamic search card or not found message will render here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Two Column Layout for Add Form & Quick Actions -->
+        <div class="grid-2col">
+            <!-- 2. ADD STUDENT SECTION -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>Add Student</h2>
+                </div>
+                <div class="card-body">
+                    <form id="addStudentForm" onsubmit="event.preventDefault(); handleAddStudent();">
+                        <div class="form-group">
+                            <label for="addRollNo">Roll Number <span class="required">*</span></label>
+                            <input type="text" id="addRollNo" placeholder="e.g. 24BCA006" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="addName">Full Name <span class="required">*</span></label>
+                            <input type="text" id="addName" placeholder="e.g. Aman Sharma" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="addCourse">Course</label>
+                                <input type="text" id="addCourse" placeholder="e.g. BCA" value="BCA">
+                            </div>
+                            <div class="form-group">
+                                <label for="addSemester">Semester</label>
+                                <input type="number" id="addSemester" min="1" max="8" placeholder="e.g. 4" value="1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="addEmail">Email Address</label>
+                            <input type="email" id="addEmail" placeholder="e.g. aman@gmail.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="addPhone">Phone Number</label>
+                            <input type="tel" id="addPhone" placeholder="e.g. 9876543215">
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-block" id="addSubmitBtn">Add Student</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 3. ACTIONS & QUICK INFO SECTION -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>Student Records Directory</h2>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">
+                        Manage all student records registered in the MySQL database. You can view all records in a structured table, edit information, or delete records.
+                    </p>
+                    <div class="action-buttons-box">
+                        <button class="btn btn-primary btn-lg" onclick="loadAllStudents()">
+                            View All Students
+                        </button>
+                        <button class="btn btn-outline btn-lg" onclick="hideStudentTable()">
+                            Hide Table
+                        </button>
+                    </div>
+
+                    <div class="quick-tips-box">
+                        <h3>Demo Quick Guide:</h3>
+                        <ul>
+                            <li><strong>Search:</strong> Try sample roll number <code>24BCA001</code> to <code>24BCA005</code>.</li>
+                            <li><strong>Create:</strong> Fill in the form and click <strong>Add Student</strong>.</li>
+                            <li><strong>Update:</strong> Click <strong>Edit</strong> on any student card or row.</li>
+                            <li><strong>Delete:</strong> Click <strong>Delete</strong> and confirm.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 4. VIEW ALL STUDENTS TABLE SECTION -->
+        <section id="studentsTableSection" class="card hidden">
+            <div class="card-header flex-header">
+                <h2>All Registered Students</h2>
+                <span id="studentCountBadge" class="badge">0 Students</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="student-table" id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Roll Number</th>
+                                <th>Name</th>
+                                <th>Course</th>
+                                <th>Semester</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Rows loaded dynamically via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noDataMessage" class="empty-state hidden">
+                    No student records found in database.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 5. EDIT STUDENT MODAL -->
+    <div id="editModal" class="modal-backdrop hidden">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Edit Student Details</h3>
+                <button type="button" class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm" onsubmit="event.preventDefault(); handleSaveEdit();">
+                    <div class="form-group">
+                        <label for="editRollNo">Roll Number (Cannot be changed)</label>
+                        <input type="text" id="editRollNo" readonly class="input-readonly">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="editName" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editCourse">Course</label>
+                            <input type="text" id="editCourse">
+                        </div>
+                        <div class="form-group">
+                            <label for="editSemester">Semester</label>
+                            <input type="number" id="editSemester" min="1" max="8">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editEmail">Email Address</label>
+                        <input type="email" id="editEmail">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number</label>
+                        <input type="tel" id="editPhone">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-success" id="saveEditBtn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Student Management System &bull; BCA Full Stack Development Project &bull; Express.js &amp; MySQL</p>
+        </div>
+    </footer>
+
+    <!-- Frontend JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

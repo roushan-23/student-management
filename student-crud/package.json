@@ -1,0 +1,24 @@
+{
+  "name": "student-crud",
+  "version": "1.0.0",
+  "description": "Student Management System - Simple CRUD Web Application for BCA",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env server.js",
+    "start": "node --env-file-if-exists=.env server.js"
+  },
+  "keywords": [
+    "student-management",
+    "crud",
+    "express",
+    "mysql",
+    "bca-project"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.9.7"
+  }
+}
