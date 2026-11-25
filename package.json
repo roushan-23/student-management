@@ -1,24 +1,29 @@
 {
-  "name": "student-crud",
-  "version": "1.0.0",
-  "description": "Student Management System - Simple CRUD Web Application for BCA",
-  "main": "server.js",
+  "name": "student-management-mern",
+  "version": "2.0.0",
+  "description": "Student Management System - MERN Stack (MongoDB, Express, React, Node.js) CRUD Application",
+  "private": true,
   "scripts": {
-    "dev": "node --env-file-if-exists=.env server.js",
-    "start": "node --env-file-if-exists=.env server.js"
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n SERVER,CLIENT -c blue,green \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start"
   },
   "keywords": [
     "student-management",
     "crud",
+    "mern",
+    "mongodb",
     "express",
-    "mysql",
-    "bca-project"
+    "react",
+    "vite",
+    "nodejs"
   ],
-  "author": "",
   "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.19.2",
-    "mysql2": "^3.9.7"
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
